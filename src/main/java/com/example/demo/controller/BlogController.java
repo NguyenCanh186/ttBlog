@@ -5,8 +5,8 @@ import com.example.demo.model.BlogForm;
 import com.example.demo.model.Category;
 import com.example.demo.service.IBlogService;
 import com.example.demo.service.category.ICategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,6 +15,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,12 +52,6 @@ public class BlogController {
         return modelAndView;
     }
 
-//    @GetMapping("/create")
-//    public String showCreateForm(Model model) {
-//        model.addAttribute("blog", new BlogForm());
-//        return "create";
-//    }
-
     @PostMapping("/create")
     public ResponseEntity<Blog> saveBlog(@RequestBody BlogForm blogForm) {
         MultipartFile multipartFile = blogForm.getCover();
@@ -67,7 +62,6 @@ public class BlogController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         Blog blog = new Blog( blogForm.getTitle(), fileName, blogForm.getContent(), blogForm.getCategory());
         blogService.save(blog);
         return new ResponseEntity<>(blog,HttpStatus.ACCEPTED);

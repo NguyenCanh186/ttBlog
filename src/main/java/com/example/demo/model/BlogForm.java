@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import org.springframework.web.multipart.MultipartFile;
 
+
 public class BlogForm {
 
     private Long id;
