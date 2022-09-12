@@ -1,29 +1,23 @@
 package com.example.demo.model;
 
-import javax.persistence.*;
+import org.springframework.web.multipart.MultipartFile;
 
-@Entity
-@Table(name = "blog")
-public class Blog {
+public class BlogForm {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
 
-    private String cover;
+    private MultipartFile cover;
 
     private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
     private Category category;
 
-    public Blog() {
+    public BlogForm() {
     }
 
-    public Blog(Long id, String title, String cover, String content, Category category) {
+    public BlogForm(Long id, String title, MultipartFile cover, String content, Category category) {
         this.id = id;
         this.title = title;
         this.cover = cover;
@@ -31,7 +25,7 @@ public class Blog {
         this.category = category;
     }
 
-    public Blog(String title, String cover, String content, Category category) {
+    public BlogForm(String title, MultipartFile cover, String content, Category category) {
         this.title = title;
         this.cover = cover;
         this.content = content;
@@ -54,11 +48,11 @@ public class Blog {
         this.title = title;
     }
 
-    public String getCover() {
+    public MultipartFile getCover() {
         return cover;
     }
 
-    public void setCover(String cover) {
+    public void setCover(MultipartFile cover) {
         this.cover = cover;
     }
 

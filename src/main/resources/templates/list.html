@@ -5,13 +5,14 @@
     <title>Title</title>
 </head>
 <body>
-<a href="/create">Create new blog</a>
+<a href="create">Create new blog</a>
 <h1>Blogs</h1>
 <table border="1">
     <tr>
         <th> title</th>
         <th>cover</th>
         <th>content</th>
+        <th>category</th>
         <th>Edit</th>
         <th>Delete</th>
     </tr>
@@ -20,6 +21,7 @@
             <td th:text="${p.title}"></td>
             <td th:text="${p.cover}"></td>
             <td th:text="${p.content}"></td>
+            <td th:text="${p.category.name}"></td>
             <td><a th:href="@{/edit/__${p.id}__ }">Edit</a></td>
             <td><a th:href="@{/delete/__${p.id}__ }">Delete</a></td>
         </tr>

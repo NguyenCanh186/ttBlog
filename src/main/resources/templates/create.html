@@ -1,26 +1,34 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+<!--    <meta charset="UTF-8">-->
     <title>Create blog</title>
 </head>
 <body>
 <h1>Create blog</h1>
 <p>
-    <a href="/blogs">Blog list</a>
+    <a href="/blogs/list">Blog list</a>
 </p>
 <th:block th:if="${message}">
     <p th:text="${message}"></p>
 </th:block>
-<form th:action="@{/create}" th:object="${blog}" method="post">
+<form th:action="@{/blogs/create}" th:object="${blog}" method="post" enctype="multipart/form-data">
     <table>
         <tr>
             <td>Title:</td>
             <td><input type="text" th:field="*{title}"/></td>
         </tr>
         <tr>
-            <td>Cover:</td>
-            <td><input type="text" th:field="*{cover}"/></td>
+            <td>Category:</td>
+            <td>
+                <select id="category" name="category">
+                    <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>cover:</td>
+            <td><input type="file" th:field="*{cover}"/></td>
         </tr>
         <tr>
             <td>Content:</td>

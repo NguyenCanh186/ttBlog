@@ -1,78 +1,83 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Blog;
+import com.example.demo.model.BlogForm;
+import com.example.demo.model.Category;
 import com.example.demo.service.IBlogService;
+import com.example.demo.service.category.ICategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 
 @Controller
+@RequestMapping("/blogs")
+@CrossOrigin("*")
 public class BlogController {
 
     @Autowired
     private IBlogService blogService;
 
-//    @GetMapping("/list")
-//    public ResponseEntity<Iterable<Blog>> ShowAllBlog(){
-//        return new ResponseEntity<>(blogService.findAll(), HttpStatus.OK);
-//    }
-//
-//    @PostMapping("/create")
-//    public ResponseEntity<Blog> saveBlog(@RequestBody Blog blog){
-//        return new ResponseEntity<>(blogService.save(blog), HttpStatus.CREATED);
-//    }
-//
-//    @DeleteMapping("delete/{id}")
-//    public ResponseEntity<Blog> deleteBlog(@PathVariable Long id) {
-//        Optional<Blog> blogOptional = blogService.findById(id);
-//        if (!blogOptional.isPresent()) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        blogService.remove(id);
-//        return new ResponseEntity<>(blogOptional.get(), HttpStatus.NO_CONTENT);
-//    }
-//
-//
-//    @PutMapping ("/edit/{id}")
-//    public ResponseEntity<Blog> updateBlog(@PathVariable Long id, @RequestBody Blog blog){
-//        blog.setId(id);
-//        return new ResponseEntity<>(blogService.save(blog), HttpStatus.OK);
-//    }
-//
-//    @GetMapping("findOne/{id}")
-//    public ResponseEntity<Blog> findOne(@PathVariable Long id){
-//        Blog blog = blogService.findById(id).get();
-//        return new ResponseEntity<>(blog,HttpStatus.OK);
-//    }
+    @Autowired
+    private ICategoryService categoryService;
 
-    @GetMapping("/create")
-    public String showCreateForm(Model model) {
-        model.addAttribute("blog", new Blog());
-        return "create";
+    @Autowired
+    Environment env;
+
+    @GetMapping("/cate")
+    public  ResponseEntity<Iterable<Category>> showAllCate(){
+        return new ResponseEntity<>(categoryService.findAll(), HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ModelAndView saveBlog(@ModelAttribute("blog") Blog blog) {
-        blogService.save(blog);
+    @ModelAttribute("categories")
+    private Iterable<Category> categories(){
+        return categoryService.findAll();
+    }
+
+    @GetMapping("/create")
+    public ModelAndView showCreateForm() {
         ModelAndView modelAndView = new ModelAndView("/create");
-        modelAndView.addObject("blog", new Blog());
-        modelAndView.addObject("message", "New blog created successfully");
+        modelAndView.addObject("blog", new BlogForm());
         return modelAndView;
     }
 
-    @GetMapping("/blogs")
+//    @GetMapping("/create")
+//    public String showCreateForm(Model model) {
+//        model.addAttribute("blog", new BlogForm());
+//        return "create";
+//    }
+
+    @PostMapping("/create")
+    public ResponseEntity<Blog> saveBlog(@RequestBody BlogForm blogForm) {
+        MultipartFile multipartFile = blogForm.getCover();
+        String fileName =multipartFile.getOriginalFilename();
+        String fileUpload = env.getProperty("upload.path");
+        try {
+            FileCopyUtils.copy(blogForm.getCover().getBytes(), new File(fileUpload + fileName));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        Blog blog = new Blog( blogForm.getTitle(), fileName, blogForm.getContent(), blogForm.getCategory());
+        blogService.save(blog);
+        return new ResponseEntity<>(blog,HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/list")
     public String listBlogs(Model model) {
-//        ModelAndView modelAndView = new ModelAndView("/list");
-//        modelAndView.addObject("blogs", blogService.findAll());
         model.addAttribute("blogs", blogService.findAll());
         return "list";
-//        return modelAndView;
+
     }
 
     @GetMapping("/edit/{id}")
